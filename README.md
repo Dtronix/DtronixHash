@@ -2,7 +2,7 @@
 
 DtronixHash [![Build Status](https://github.com/Dtronix/DtronixHash/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/Dtronix/DtronixHash/actions/workflows/dotnet-core.yml)[![NuGet](https://img.shields.io/nuget/v/DtronixHash.svg?maxAge=60)](https://www.nuget.org/packages/DtronixHash)
 ============
-DtronixHash contains hashing algorithms utilizing modern .NET methodologies for simple and fast usage.
+DtronixHash contains hashing algorithms utilizing modern .NET methodologies for simple and efficient usage.
 
 
 
@@ -54,4 +54,4 @@ Intel Core i7-10700 CPU 2.90GHz, 1 CPU, 16 logical and 8 physical cores
 
 #### License
 
-Licenses 
+MIT
