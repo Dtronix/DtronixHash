@@ -16,7 +16,7 @@ using System;
 
 namespace DtronixHash.MurMur3
 {
-    internal class MurMur3Hash128X64 : MurMur3Hash128
+    public class MurMur3Hash128X64 : MurMur3Hash128
     {
         const ulong C1 = 0x87c37b91114253d5UL;
         const ulong C2 = 0x4cf5ad432745937fUL;

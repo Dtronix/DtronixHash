@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DtronixHash.MurMur3
 {
-    internal abstract class MurMur3Hash128 : NcHashAlgorithm
+    public abstract class MurMur3Hash128 : NcHashAlgorithm
     {
         public uint Seed { get; }
         public int Length { get; private set; }

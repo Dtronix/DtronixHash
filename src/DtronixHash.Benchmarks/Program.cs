@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using DtronixHash.MurMur3;
+using Microsoft.Diagnostics.Tracing.Parsers;
 
 namespace DtronixHash.Benchmarks
 {
@@ -14,6 +18,7 @@ namespace DtronixHash.Benchmarks
     [RPlotExporter]
     public class MurMur3Benchmark
     {
+
         private byte[] _data;
         private ReadOnlyMemory<byte> _dataMemory;
 
@@ -29,8 +34,11 @@ namespace DtronixHash.Benchmarks
         private readonly NcHashAlgorithm _bmurMur3Hash128X86 = new MurMur3Hash128X86();
         private readonly NcHashAlgorithm _bmurMur3Hash128X64 = new MurMur3Hash128X64();
 
-        [Params(1_000, 10_000, 50_000_000)]
+        [Params(1_000, 100_000, 100_000_000)]
         public int DataSize;
+
+        private int _bufferSize;
+        //private IMemoryOwner<byte> _buffer;
 
         [GlobalSetup]
         public void GlobalSetup()
@@ -38,7 +46,15 @@ namespace DtronixHash.Benchmarks
             _data = new byte[DataSize]; // executed once per each DataSize value
             _dataMemory = _data;
             new Random(42).NextBytes(_data);
+            _bufferSize = 1024 * 4;
         }
+
+        [GlobalCleanup]
+        public void GlobalCleanup()
+        {
+            //_buffer.Dispose();
+        }
+
 
         [Benchmark]
         public Memory<byte> ComputeMurMur3Hash128X64() => _cmurMur3Hash128X64.ComputeHash(_data);
@@ -72,14 +88,7 @@ namespace DtronixHash.Benchmarks
 
         public Memory<byte> NcHashBufferData(NcHashAlgorithm algorithm)
         {
-            var buffer = new NcHashBuffer(algorithm);
-            var iterations = DataSize / 100;
-            for (int i = 0; i < iterations; i++)
-            {
-                buffer.Write(_dataMemory.Slice(i * 100, 100));
-            }
-
-            return buffer.FinalizeHash();
+            return NcHashBufferData(algorithm, DataSize, _bufferSize, _dataMemory);
         }
 
         private byte[] HashData(HashAlgorithm algorithm)
@@ -87,13 +96,39 @@ namespace DtronixHash.Benchmarks
             using var inputStream = new MemoryStream(_data);
             return algorithm.ComputeHash(inputStream);
         }
+
+        public Memory<byte> NcHashBufferData(NcHashAlgorithm algorithm, int dataSize, int bufferSize, ReadOnlyMemory<byte> dataMemory)
+        {
+            var hashBuffer = new NcHashBuffer(algorithm);
+
+            // Matching the default size of ComputeHash.
+            var iterations = dataSize / bufferSize;
+            var remainder = dataSize - iterations * bufferSize;
+
+            for (int i = 0; i < iterations; i++)
+            {
+                hashBuffer.Write(dataMemory.Slice(i * bufferSize, bufferSize));
+            }
+
+            if (remainder > 0)
+                hashBuffer.Write(dataMemory.Slice(iterations * bufferSize, remainder));
+
+            return hashBuffer.FinalizeHash();
+        }
     }
+
 
     public class Program
     {
         public static void Main(string[] args)
-        { 
-            BenchmarkRunner.Run<MurMur3Benchmark>();
+        {
+            var config = new ManualConfig();
+            config.AddExporter(DefaultConfig.Instance.GetExporters().ToArray());
+            config.AddLogger(DefaultConfig.Instance.GetLoggers().ToArray());
+            config.AddColumnProvider(DefaultConfig.Instance.GetColumnProviders().ToArray());
+            config.AddColumn(new ThroughputColumn("MBps"));
+
+            BenchmarkRunner.Run<MurMur3Benchmark>(config);
         }
     }
 }

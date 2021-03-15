@@ -3,6 +3,21 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Description>DtronixHash contains hashing algorithms utilizing modern .NET methodologies for simple and efficient usage.</Description>
+    <PackageOutputPath>$(ProjectDir)..\..\artifacts\</PackageOutputPath>
+    <Company>Dtronix</Company>
+    <Product>Dtronix Hash</Product>
+    <Copyright>Copyright © Dtronix 2021</Copyright>
+    <Authors>DJGosnell</Authors>
+    <PackageProjectUrl>https://github.com/Dtronix/DtronixHash</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Dtronix/DtronixHash</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageTags>hash murmur3</PackageTags>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl />
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +27,10 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DtronixHash.Benchmarks</_Parameter1>
     </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>

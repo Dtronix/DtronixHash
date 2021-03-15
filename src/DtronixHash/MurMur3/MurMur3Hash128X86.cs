@@ -16,7 +16,7 @@ using System;
 
 namespace DtronixHash.MurMur3
 {
-    internal class MurMur3Hash128X86 : MurMur3Hash128
+    public class MurMur3Hash128X86 : MurMur3Hash128
     {
         const uint C1 = 0x239b961b;
         const uint C2 = 0xab0e9789;
@@ -35,7 +35,6 @@ namespace DtronixHash.MurMur3
 
         private void Reset()
         {
-            // initialize hash values to seed values
             H1 = H2 = H3 = H4 = Seed;
         }
 

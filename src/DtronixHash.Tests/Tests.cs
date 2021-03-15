@@ -135,7 +135,7 @@ namespace DtronixHash.Tests
             return algorithm switch
             {
                 HashAlgorithms.MurMur3Hash128X64 => new MurMur3Hash128X64(),
-                HashAlgorithms.MurMur3Hash128X86 => new MurMur3Hash128X64(),
+                HashAlgorithms.MurMur3Hash128X86 => new MurMur3Hash128X86(),
                 _ => throw new ArgumentOutOfRangeException(nameof(algorithm), algorithm, null)
             };
         }

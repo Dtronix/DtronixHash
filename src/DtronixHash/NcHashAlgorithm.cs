@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DtronixHash.MurMur3
+namespace DtronixHash
 {
     /// <summary>
     /// Non cryptographic hash function interface
