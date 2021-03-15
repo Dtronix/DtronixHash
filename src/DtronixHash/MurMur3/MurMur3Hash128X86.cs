@@ -22,7 +22,7 @@ namespace DtronixHash.MurMur3
         const uint C2 = 0xab0e9789;
         const uint C3 = 0x38b34ae5;
         const uint C4 = 0xa1e38b93;
-        internal MurMur3Hash128X86(uint seed = 0)
+        public MurMur3Hash128X86(uint seed = 0)
             : base(seed)
         {
             Reset();

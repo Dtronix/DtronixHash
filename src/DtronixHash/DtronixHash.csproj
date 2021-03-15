@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.1.1</VersionPrefix>
     <Description>DtronixHash contains hashing algorithms utilizing modern .NET methodologies for simple and efficient usage.</Description>
     <PackageOutputPath>$(ProjectDir)..\..\artifacts\</PackageOutputPath>
     <Company>Dtronix</Company>

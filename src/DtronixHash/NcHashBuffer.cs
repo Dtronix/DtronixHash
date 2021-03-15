@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DtronixHash.MurMur3;
 
 namespace DtronixHash
 {
+    /// <summary>
+    /// Non Cryptographic Hash Buffer.
+    /// </summary>
     public class NcHashBuffer
     {
         private readonly NcHashAlgorithm _algorithm;
@@ -12,6 +12,15 @@ namespace DtronixHash
         private int _bufferPosition;
         private readonly int _blockSizeBytes;
 
+        /// <summary>
+        /// Algorithm used by the buffer.
+        /// </summary>
+        public NcHashAlgorithm Algorithm => _algorithm;
+
+        /// <summary>
+        /// Creates a new instance of the Non Cryptographic Hash Buffer.
+        /// </summary>
+        /// <param name="algorithm">Algorithm to use while hashing.</param>
         public NcHashBuffer(NcHashAlgorithm algorithm)
         {
             _algorithm = algorithm;
@@ -19,6 +28,10 @@ namespace DtronixHash
             _buffer = new Memory<byte>(new byte[_blockSizeBytes]);
         }
 
+        /// <summary>
+        /// Writes data to the managed hash algorithm.
+        /// </summary>
+        /// <param name="data">Data to hash.</param>
         public void Write(ReadOnlyMemory<byte> data)
         {
             var remainder = data.Length & (_blockSizeBytes - 1);
@@ -75,6 +88,10 @@ namespace DtronixHash
             }
         }
 
+        /// <summary>
+        /// Flushes any buffered data and returns the final hash result.
+        /// </summary>
+        /// <returns>Hash bytes</returns>
         public Memory<byte> FinalizeHash()
         {
             if(_bufferPosition > 0)

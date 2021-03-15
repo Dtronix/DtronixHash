@@ -26,7 +26,7 @@ namespace DtronixHash.MurMur3
 
 
 
-        internal MurMur3Hash128X64(uint seed = 0)
+        public MurMur3Hash128X64(uint seed = 0)
             : base(seed)
         {
             Reset();
