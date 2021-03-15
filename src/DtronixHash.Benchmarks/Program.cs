@@ -15,58 +15,19 @@ namespace DtronixHash.Benchmarks
     public class MurMur3Benchmark
     {
         private byte[] _data;
-
-        private readonly HashAlgorithm _sha1 = SHA1.Create();
-        private readonly HashAlgorithm _sha256 = SHA256.Create();
-        private readonly MD5 _md5 = MD5.Create();
-        private readonly NcHashAlgorithm _murMur3Hash128X86 = new MurMur3Hash128X86();
-        private readonly NcHashAlgorithm _murMur3Hash128X64 = new MurMur3Hash128X64();
-
-        [Params(1_000, 10_000, 50_000_000)]
-        public int DataSize;
-
-        [GlobalSetup]
-        public void GlobalSetup()
-        {
-            _data = new byte[DataSize]; // executed once per each DataSize value
-            new Random(42).NextBytes(_data);
-        }
-
-        [Benchmark]
-        public Memory<byte> MurMur3Hash128X64()
-        {
-            return _murMur3Hash128X64.ComputeHash(_data);
-        }
-
-        [Benchmark]
-        public Memory<byte> MurMur3Hash128X86()
-        {
-            return _murMur3Hash128X86.ComputeHash(_data);
-        }
-
-        [Benchmark]
-        public byte[] Md5() => _md5.ComputeHash(_data);
-
-        [Benchmark]
-        public byte[] Sha256() => _sha256.ComputeHash(_data);
-
-        [Benchmark]
-        public byte[] Sha1() => _sha1.ComputeHash(_data);
-    }
-
-    [MemoryDiagnoser]
-    [RPlotExporter]
-    public class NcHashBufferBenchmark
-    {
-        private byte[] _data;
-
         private ReadOnlyMemory<byte> _dataMemory;
 
-        private readonly HashAlgorithm _sha1 = SHA1.Create();
-        private readonly HashAlgorithm _sha256 = SHA256.Create();
-        private readonly MD5 _md5 = MD5.Create();
-        private readonly NcHashAlgorithm _murMur3Hash128X86 = new MurMur3Hash128X86();
-        private readonly NcHashAlgorithm _murMur3Hash128X64 = new MurMur3Hash128X64();
+        private readonly HashAlgorithm _csha1 = SHA1.Create();
+        private readonly HashAlgorithm _csha256 = SHA256.Create();
+        private readonly MD5 _cmd5 = MD5.Create();
+        private readonly NcHashAlgorithm _cmurMur3Hash128X86 = new MurMur3Hash128X86();
+        private readonly NcHashAlgorithm _cmurMur3Hash128X64 = new MurMur3Hash128X64();
+
+        private readonly HashAlgorithm _bsha1 = SHA1.Create();
+        private readonly HashAlgorithm _bsha256 = SHA256.Create();
+        private readonly MD5 _bmd5 = MD5.Create();
+        private readonly NcHashAlgorithm _bmurMur3Hash128X86 = new MurMur3Hash128X86();
+        private readonly NcHashAlgorithm _bmurMur3Hash128X64 = new MurMur3Hash128X64();
 
         [Params(1_000, 10_000, 50_000_000)]
         public int DataSize;
@@ -75,24 +36,39 @@ namespace DtronixHash.Benchmarks
         public void GlobalSetup()
         {
             _data = new byte[DataSize]; // executed once per each DataSize value
-            _dataMemory = _data; // executed once per each DataSize value
+            _dataMemory = _data;
             new Random(42).NextBytes(_data);
         }
 
         [Benchmark]
-        public Memory<byte> MurMur3Hash128X64() => NcHashBufferData(_murMur3Hash128X86);
+        public Memory<byte> ComputeMurMur3Hash128X64() => _cmurMur3Hash128X64.ComputeHash(_data);
 
         [Benchmark]
-        public Memory<byte> MurMur3Hash128X86() => NcHashBufferData(_murMur3Hash128X86);
+        public Memory<byte> ComputeMurMur3Hash128X86() => _cmurMur3Hash128X86.ComputeHash(_data);
 
         [Benchmark]
-        public byte[] Md5() => HashData(_md5);
+        public byte[] ComputeMd5() => _cmd5.ComputeHash(_data);
 
         [Benchmark]
-        public byte[] Sha256() => HashData(_sha256);
+        public byte[] ComputeSha256() => _csha256.ComputeHash(_data);
 
         [Benchmark]
-        public byte[] Sha1() => HashData(_sha1);
+        public byte[] ComputeSha1() => _csha1.ComputeHash(_data);
+
+        [Benchmark]
+        public Memory<byte> BufferMurMur3Hash128X64() => NcHashBufferData(_bmurMur3Hash128X64);
+
+        [Benchmark]
+        public Memory<byte> BufferMurMur3Hash128X86() => NcHashBufferData(_bmurMur3Hash128X86);
+
+        [Benchmark]
+        public byte[] BufferMd5() => HashData(_bmd5);
+
+        [Benchmark]
+        public byte[] BufferSha256() => HashData(_bsha256);
+
+        [Benchmark]
+        public byte[] BufferSha1() => HashData(_bsha1);
 
         public Memory<byte> NcHashBufferData(NcHashAlgorithm algorithm)
         {
@@ -106,31 +82,18 @@ namespace DtronixHash.Benchmarks
             return buffer.FinalizeHash();
         }
 
-        private byte[] HashData(ICryptoTransform transformer)
+        private byte[] HashData(HashAlgorithm algorithm)
         {
-            var inputStream = new MemoryStream(_data);
-            var cryptoStream = new CryptoStream(inputStream, transformer, CryptoStreamMode.Read);
-            var buffer = new Span<byte>(new byte[100]);
-            int readLength = 0;
-            int totalRead = 0;
-            while ((readLength = cryptoStream.Read(buffer)) > 0)
-            {
-                totalRead += readLength;
-                if (totalRead == _data.Length)
-                    break;
-            }
-            cryptoStream.FlushFinalBlock();
-
-            return _sha1.Hash;
+            using var inputStream = new MemoryStream(_data);
+            return algorithm.ComputeHash(inputStream);
         }
     }
 
     public class Program
     {
         public static void Main(string[] args)
-        {
-            //BenchmarkRunner.Run<MurMur3Benchmark>();
-            BenchmarkRunner.Run<NcHashBufferBenchmark>();
+        { 
+            BenchmarkRunner.Run<MurMur3Benchmark>();
         }
     }
 }

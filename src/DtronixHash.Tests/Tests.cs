@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using DtronixHash.MurMur3;
@@ -36,6 +37,7 @@ namespace DtronixHash.Tests
         [SetUp]
         public void Setup()
         {
+
         }
 
         [Test]
@@ -95,6 +97,32 @@ namespace DtronixHash.Tests
             Assert.AreEqual(value1.ToArray(), buffer.FinalizeHash().ToArray());
         }
 
+        [Test]
+        [TestCase(HashAlgorithms.MurMur3Hash128X64)]
+        [TestCase(HashAlgorithms.MurMur3Hash128X86)]
+        public void NcHashBuffer_hashes_medium_buffers(HashAlgorithms algorithm)
+        {
+            var sourceHashAlgorithm = GetHashAlgorithm(algorithm);
+            var loops = 10;
+            var bytes = new byte[1000];
+
+            RandomNumberGenerator.Fill(bytes);
+
+            var correctHashValue = GetHashValue(sourceHashAlgorithm, bytes);
+
+            var hash = GetHashAlgorithm(algorithm);
+            var mem = new Memory<byte>(bytes);
+            var buffer = new NcHashBuffer(hash);
+
+            for (int i = 0; i < loops; i++)
+            {
+                buffer.Write(mem.Slice(i * (bytes.Length/loops), bytes.Length / loops));
+            }
+
+            var calculatedHashValue = buffer.FinalizeHash();
+
+            Assert.AreEqual(correctHashValue.ToArray(), calculatedHashValue.ToArray());
+        }
 
         private Memory<byte> GetHashValue(NcHashAlgorithm algorithm, ReadOnlyMemory<byte> data)
         {

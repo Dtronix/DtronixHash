@@ -21,8 +21,8 @@ namespace DtronixHash
 
         public void Write(ReadOnlyMemory<byte> data)
         {
-            var remainder = data.Length & 15;
-            var blocks = data.Length / 16;
+            var remainder = data.Length & (_blockSizeBytes - 1);
+            var blocks = data.Length / _blockSizeBytes;
 
             // Hot path.  Buffer is empty.
             if (_bufferPosition == 0)
@@ -31,6 +31,17 @@ namespace DtronixHash
                 {
                     // Hot hot path
                     _algorithm.TransformBlock(data);
+                }
+                else if (remainder > 0 && blocks > 0)
+                {
+                    // We have excess and blocks to transform now.
+                    var transformLength = data.Length - remainder;
+                    _algorithm.TransformBlock(data.Slice(0, transformLength));
+
+                    // Store for next call.
+                    // We don't have enough for hashing, so buffer for next call.
+                    data.Slice(transformLength, remainder).CopyTo(_buffer);
+                    _bufferPosition = remainder;
                 }
                 else
                 {
