@@ -1,4 +1,4 @@
-![Icon](src/DtronixHash/icon.png) DtronixHash [![Build Status](https://github.com/Dtronix/DtronixHash/actions/workflows/dotnet-core.yml/badge.svg)](https://github.com/Dtronix/DtronixHash/actions/workflows/dotnet-core.yml) [![NuGet](https://img.shields.io/nuget/v/DtronixHash.svg?maxAge=60)](https://www.nuget.org/packages/DtronixHash)
+![Icon](src/DtronixHash/icon.png) DtronixHash [![Build Status](https://github.com/Dtronix/DtronixHash/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Dtronix/DtronixHash/actions/workflows/dotnet.yml) [![NuGet](https://img.shields.io/nuget/v/DtronixHash.svg?maxAge=60)](https://www.nuget.org/packages/DtronixHash)
 ============
 DtronixHash contains hashing algorithms utilizing modern .NET methodologies for simple and efficient usage.
 
