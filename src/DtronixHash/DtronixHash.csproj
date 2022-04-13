@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <VersionPrefix>0.1.1</VersionPrefix>
+    <VersionPrefix>0.1.1.1</VersionPrefix>
     <Description>DtronixHash contains hashing algorithms utilizing modern .NET methodologies for simple and efficient usage.</Description>
     <PackageOutputPath>$(ProjectDir)..\..\artifacts\</PackageOutputPath>
     <Company>Dtronix</Company>
@@ -17,9 +17,16 @@
     <PackageTags>hash murmur3</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <PackageIconUrl />
-
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
-
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+  </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
       <_Parameter1>DtronixHash.Tests</_Parameter1>
